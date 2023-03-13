@@ -1,5 +1,5 @@
-let name = localStorage.getItem('name');
-let email = localStorage.getItem('email');
+const name = localStorage.getItem('name');
+const email = localStorage.getItem('email');
 
 const questions = [
   {
@@ -27,6 +27,21 @@ const questions = [
     answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
     correct: [1, 4],
   },
+  {
+    question: "Питання 6",
+    answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
+    correct: [2, 3],
+  },
+  {
+    question: "Питання 7",
+    answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
+    correct: [3, 4],
+  },
+  {
+    question: "Питання 8",
+    answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
+    correct: [1, 2],
+  },
 ];
 
 const headerContainer = document.querySelector('#header');
@@ -37,17 +52,23 @@ let score = 0;
 let questionIndex = 0;
 
 clearPage();
-submitBtn.onclick = checkAnswer;
+checkbox();
+
+
+function checkbox(){
+  if (questions[questionIndex].correct.length > 1) {
+    showQuestion2();
+  } else if (questions[questionIndex].correct.length = 1){
+    showQuestion1();
+  }
+  else {
+    showQuestion3();
+  }
+}
 
 function clearPage(){
   headerContainer.innerHTML = '';
   listContainer.innerHTML = '';
-if (questions[questionIndex].correct.length > 1) {
-    showQuestion2();
-    console.log("2");
-  } else {
-    showQuestion1();
-  }
 }
 
 function showQuestion1(){
@@ -73,6 +94,7 @@ function showQuestion1(){
 
   listContainer.innerHTML += answerHTML;
   answerNumber++;
+  submitBtn.onclick = checkRadioAnswer;
   }
 }
 
@@ -99,40 +121,54 @@ function showQuestion2(){
 
   listContainer.innerHTML += answerHTML;
   answerNumber++;
+  submitBtn.onclick = checkBoxAnswer;
   }
 }
 
-
-function checkAnswer(){
-  const checkRadio = listContainer.querySelectorAll('input[type="radio"]:checked');
-  const checkCheckbox = listContainer.querySelectorAll('input[type="checkbox"]:checked');
-  console.log(checkRadio, checkCheckbox);
-
-  if (!checkRadio) {
-    submitBtn.blur();
-    return
-  } if (!checkCheckbox) {
-    submitBtn.blur();
-    return
-  }
-  const userAnswer = parseInt(checkRadio.value);
-  const userAnswer2 = parseInt(checkCheckbox.value);
-  
-if (userAnswer === questions[questionIndex]['correct']) {
-  score++;
-} else if (userAnswer2 === questions[questionIndex]['correct']){
-  score++;
-}
-
+function checklong(){
   if (questionIndex !== questions.length - 1){
     questionIndex++;
     clearPage();
+    checkbox();
     return
   } else {
     clearPage();
     showResults();
   }
 }
+
+function checkBoxAnswer(){
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  const correctAnswers = questions[questionIndex]['correct'];
+  let isCorrect = true;
+
+  checkboxes.forEach((checkbox, index) => {
+    if (checkbox.checked && !correctAnswers.includes(index + 1)) {
+      isCorrect = false;
+    }
+    if (!checkbox.checked && correctAnswers.includes(index + 1)) {
+      isCorrect = false;
+    }
+  });
+
+  if (isCorrect) {
+    score++;
+  }
+
+  checklong();
+}
+
+
+function checkRadioAnswer(){
+  const checkRadio = listContainer.querySelector('input[type="radio"]:checked');
+  const userAnswer = parseInt(checkRadio.value);
+ 
+  if (userAnswer === questions[questionIndex]['correct']) {
+    score++;
+  }
+    console.log(score);
+    checklong();
+  }
 
 function showResults(){
   const resultsTemplate = 
