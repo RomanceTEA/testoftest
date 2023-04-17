@@ -35,12 +35,22 @@ const questions = [
   {
     question: "Питання 7",
     answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
-    correct: [3, 4],
+    correct: [2, 3, 4],
   },
   {
     question: "Питання 8",
     answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
     correct: [1, 2],
+  },
+  {
+    question: ["Питання 8"],
+    answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
+    compliance: {
+      "Питання 8" : "Варіант 2",
+      "sfsdfsdfsdf": "Варіант 3",
+      "dsfdsfsddsfds": "Варіант 1",
+      "edfdsfdsfds": "Варіант 4"
+    },
   },
 ];
 
@@ -54,14 +64,12 @@ let questionIndex = 0;
 clearPage();
 checkbox();
 
-
 function checkbox(){
   if (questions[questionIndex].correct.length > 1) {
     showQuestion2();
   } else if (questions[questionIndex].correct.length = 1){
     showQuestion1();
-  }
-  else {
+  } else if (questions[questionIndex].compliance.length > 1) {
     showQuestion3();
   }
 }
@@ -125,6 +133,34 @@ function showQuestion2(){
   }
 }
 
+function showQuestion3(){
+  const headerTemplate3 = `<span>%title%</span>`;
+  const title = headerTemplate3.replace('%title%', questions[questionIndex]['question'])
+
+  let answerNumber = 1;
+  let answerText;
+
+  headerContainer.innerHTML = title;
+
+  for (answerText of questions[questionIndex]['answer']) {
+    const questionTemplate3 = 
+    `<li><span>%question%</span>
+    <select name="answer1">
+    <option value="%number%" >%answer%</option>
+    <option value="%number%">%answer%</option>
+    <option value="%number%">%answer%</option>
+    <option value="%number%">%answer%</option>
+    </select>
+  </li>`;
+
+  let answerHTML = questionTemplate3.replace('%answer%',answerText);
+  answerHTML = answerHTML.replace('%number%', answerNumber);
+
+  listContainer.innerHTML += answerHTML;
+  answerNumber++;
+  submitBtn.onclick = checkBoxAnswer;
+  }
+}
 function checklong(){
   if (questionIndex !== questions.length - 1){
     questionIndex++;
@@ -137,24 +173,26 @@ function checklong(){
   }
 }
 
-function checkBoxAnswer(){
-  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-  const correctAnswers = questions[questionIndex]['correct'];
+function checkBoxAnswer() {
+  const checkboxes = listContainer.querySelectorAll('input[type="checkbox"]:checked');
   let isCorrect = true;
 
-  checkboxes.forEach((checkbox, index) => {
-    if (checkbox.checked && !correctAnswers.includes(index + 1)) {
-      isCorrect = false;
-    }
-    if (!checkbox.checked && correctAnswers.includes(index + 1)) {
+  if (!checkboxes) {
+    submitBtn.blur();
+      return
+  }
+
+  checkboxes.forEach((checkbox) => {
+    const userAnswer = parseInt(checkbox.value);
+    if (!questions[questionIndex]['correct'].includes(userAnswer)) {
       isCorrect = false;
     }
   });
 
-  if (isCorrect) {
+  if (isCorrect && checkboxes.length === questions[questionIndex]['correct'].length) {
     score++;
   }
-
+  
   checklong();
 }
 
@@ -163,6 +201,11 @@ function checkRadioAnswer(){
   const checkRadio = listContainer.querySelector('input[type="radio"]:checked');
   const userAnswer = parseInt(checkRadio.value);
  
+  if (!checkRadio) {
+    submitBtn.blur();
+      return
+  }
+
   if (userAnswer === questions[questionIndex]['correct']) {
     score++;
   }
