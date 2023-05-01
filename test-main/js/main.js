@@ -43,7 +43,7 @@ const questions = [
     correct: [1, 2],
   },
   {
-    question: ["Питання 8"],
+    question: ["Питання 8", "Питання 8"],
     answer: ["Варіант 1" , "Варіант 2", "Варіант 3", "Варіант 4"],
     compliance: {
       "Питання 8" : "Варіант 2",
@@ -61,7 +61,7 @@ const submitBtn = document.querySelector('#submit');
 let score = 0;
 let questionIndex = 0;
 
-clearPage();
+// clearPage();
 checkbox();
 
 function checkbox(){
@@ -69,7 +69,7 @@ function checkbox(){
     showQuestion2();
   } else if (questions[questionIndex].correct.length = 1){
     showQuestion1();
-  } else if (questions[questionIndex].compliance.length > 1) {
+  } else if (questions[questionIndex].question.length > 1) {
     showQuestion3();
   }
 }
@@ -134,32 +134,49 @@ function showQuestion2(){
 }
 
 function showQuestion3(){
-  const headerTemplate3 = `<span>%title%</span>`;
-  const title = headerTemplate3.replace('%title%', questions[questionIndex]['question'])
 
   let answerNumber = 1;
+  let questionNumber = 1;
   let answerText;
+  let questionText;
 
-  headerContainer.innerHTML = title;
+  for (questionText of questions[questionIndex]['question']) {
+    const questionTemplate3 = 
+    `<li><h3 class="title" value="%number%">%question%</h3>
+    <select name="answer1">
+    <option value="%number%">А</option>
+    <option value="%number%">Б</option>
+    <option value="%number%">В</option>
+    <option value="%number%">Г</option>
+    </select>
+  </li>`;
 
   for (answerText of questions[questionIndex]['answer']) {
-    const questionTemplate3 = 
-    `<li><span>%question%</span>
+    const questionTemplate4 = 
+    `<li><h3 class="title" value="%number%>%question%</h3>
     <select name="answer1">
-    <option value="%number%" >%answer%</option>
+    <option value="%number%">%answer%</option>
     <option value="%number%">%answer%</option>
     <option value="%number%">%answer%</option>
     <option value="%number%">%answer%</option>
     </select>
   </li>`;
 
-  let answerHTML = questionTemplate3.replace('%answer%',answerText);
+  let questionHTML = questionTemplate3.replace('%question%',questionText);
+  questionHTML = questionHTML.replace('%number%', questionNumber);  
+
+  let answerHTML = questionTemplate4.replace('%answer%',answerText);
   answerHTML = answerHTML.replace('%number%', answerNumber);
 
+
+  listContainer.innerHTML += questionHTML;
   listContainer.innerHTML += answerHTML;
   answerNumber++;
+  questionNumber++;
   submitBtn.onclick = checkBoxAnswer;
   }
+}
+
 }
 function checklong(){
   if (questionIndex !== questions.length - 1){
